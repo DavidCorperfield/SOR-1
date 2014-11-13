@@ -36,11 +36,11 @@ public:
      pe = p;
      bc = b;
      grid = g;
-     solution = new double* [grid->sizex()];
-     solution_old = new double* [grid->sizex()];
-     for(int i = 0; i < grid->sizex(); i++){
-         solution[i] = new double [grid->sizey()];
-         solution_old[i] = new double [grid->sizey()];
+     solution = new double* [grid->lsizex()];
+     solution_old = new double* [grid->lsizex()];
+     for(int i = 0; i < grid->lsizex(); i++){
+         solution[i] = new double [grid->lsizey()];
+         solution_old[i] = new double [grid->lsizey()];
        }
      SetInitialGuess();
      setBC();
@@ -59,22 +59,24 @@ public:
    }
 
    void setBC(){
-     for(int i = 0; i < grid->sizex(); i++){
-         for(int j = 0; j < grid->sizey(); j++){
+     for(int i = 0; i < grid->lsizex(); i++){
+         for(int j = 0; j < grid->lsizey(); j++){
+             int _i = i+grid->i_lb;
+             int _j = j+grid->j_lb;
 
-             if(i == 0){
+             if(_i == 0){
                  solution_old[i][j] = bc->leftBC(grid->grid[i][j].x,grid->grid[i][j].y);
                  solution[i][j] = solution_old[i][j];
                }
-             if(i == grid->sizex()-1){
+             if(_i == grid->sizex()-1){
                  solution_old[i][j] = bc->rightBC(grid->grid[i][j].x,grid->grid[i][j].y);
                  solution[i][j] = solution_old[i][j];
                }
-             if(j == 0){
+             if(_j == 0){
                  solution_old[i][j] = bc->bottomBC(grid->grid[i][j].x,grid->grid[i][j].y);
                  solution[i][j] = solution_old[i][j];
                }
-             if(j == grid->sizey()-1){
+             if(_j == grid->sizey()-1){
                  solution_old[i][j] = bc->topBC(grid->grid[i][j].x,grid->grid[i][j].y);
                  solution[i][j] = solution_old[i][j];
                }
@@ -85,9 +87,14 @@ public:
    }
 
    void SetInitialGuess(){
-     for(int i = 1; i < grid->sizex()-1; i++){
-         for(int j = 1; j < grid->sizey()-1; j++){
-             solution_old[i][j] = 0.0;
+     for(int i = 0; i < grid->lsizex(); i++){
+         for(int j = 0; j < grid->lsizey(); j++){
+             int _i = i+grid->i_lb;
+             int _j = j+grid->j_lb;
+             if(_i > 0 && _i < grid->sizex() && _j > 0 && _j < grid->sizey()){
+                 solution_old[i][j] = 0.0;
+                 solution[i][j] = 0.0;
+               }
            }
        }
    }
@@ -239,9 +246,10 @@ public:
    }
 
    void exact_solution(){
-     for(int i = 1; i < grid->sizex()-1; i++){
-         for(int j = 1; j < grid->sizey()-1; j++){
+     for(int i = 0; i < grid->lsizex(); i++){
+         for(int j = 0; j < grid->lsizey(); j++){
              solution[i][j] = exactsol(grid->grid[i][j].x,grid->grid[i][j].y);
+
            }
        }
    }
@@ -249,10 +257,13 @@ public:
 
 
    void WriteSolution(string filename){
-     ofstream file(filename);
-
-     for(int i = 0; i < grid->sizex(); i++){
-         for(int j = 0; j < grid->sizey(); j++){
+     int rank;
+     MPI_Comm_rank(MPI_COMM_WORLD,&rank);
+     string name = to_string(rank);
+     name += filename;
+     ofstream file(name);
+     for(int j = 0; j < grid->lsizey(); j++){
+         for(int i = 0; i < grid->lsizex(); i++){
              file << solution[i][j] << "\t";
            }
          file << endl;
@@ -262,7 +273,7 @@ public:
 
 
    ~SOR(){
-     for(int i = 0; i < grid->sizex(); ++i){
+     for(int i = 0; i < grid->lsizex(); ++i){
          delete[] solution[i];
          delete[] solution_old[i];
        }

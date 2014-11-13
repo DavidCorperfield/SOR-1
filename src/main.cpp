@@ -35,7 +35,7 @@ double exactsol(const double& x, const double& y){
 
 
 
-int main(int *argc, char **argv)
+int main(int argc, char **argv)
 {
   int ierr;
 
@@ -43,7 +43,9 @@ int main(int *argc, char **argv)
 
 
   PoissonEq pe(1,1,righthandside,0,1,0,1);
-  Grid grid(100,100,pe);
+  Grid grid;
+  grid.SetGridSize(10,10);
+  grid.SetEquation(pe);
   BoundaryConditions bc;
   // set boundary conditions
   bc.SetLeftBC(leftBC);
@@ -52,17 +54,21 @@ int main(int *argc, char **argv)
   bc.SetBottomBC(bottomBC);
 
   SOR solver(&pe,&bc,&grid);
-  solver.setMaxIterations(1e8);
+  solver.setMaxIterations(1e6);
   solver.setRelaxationParameter(1.9);
-  //solver.set_exactsol_fun(exactsol);
-  //solver.exact_solution();
+  solver.set_exactsol_fun(exactsol);
+  solver.exact_solution();
 
-  double tstart = omp_get_wtime();
-  solver.solve_sor_omp();
-  double tend = omp_get_wtime();
+//  double tstart = omp_get_wtime();
+//  solver.solve_sor_omp();
+//  double tend = omp_get_wtime();
 
   solver.WriteSolution("sol.dat");
 
-  cout << "Time taken = " << tend - tstart << endl;
+//  cout << "Time taken = " << tend - tstart << endl;
+
+  ierr = MPI_Finalize();
+
+  cout << "Hello Pranav!" << endl;
   return 0;
 }
