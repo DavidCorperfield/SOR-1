@@ -1,9 +1,12 @@
 #include <iostream>
 #include <cmath>
 #include <omp.h>
+#include "mpi.h"
 #include "sor.hpp"
 using namespace std;
 
+/* Error Check */
+#define CHKERRQ(n) if(n != MPI_SUCCESS) printf("Error!! Check line number : %d\n",__LINE__)
 
 double righthandside(double x,double y){
   //x = 0; y = 0
@@ -32,12 +35,12 @@ double exactsol(const double& x, const double& y){
 
 
 
-int main()
+int main(int *argc, char **argv)
 {
-  int nthreads = 1;
-  //cout << "Enter number of threads : ";
-  //cin >> nthreads;
-  omp_set_num_threads(nthreads);
+  int ierr;
+
+  ierr = MPI_Init(&argc,&argv); CHKERRQ(ierr);
+
 
   PoissonEq pe(1,1,righthandside,0,1,0,1);
   Grid grid(100,100,pe);

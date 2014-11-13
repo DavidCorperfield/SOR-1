@@ -7,6 +7,7 @@
 #include "poissoneq.hpp"
 #include "grid.hpp"
 #include "boundaryconditions.hpp"
+#include "mpi.h"
 
 using namespace std;
 

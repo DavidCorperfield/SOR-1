@@ -5,10 +5,12 @@
 #include <cmath>
 #include <fstream>
 #include <vector>
-#include "poissoneq.hpp"
-#include "boundaryconditions.hpp"
+#include "mpi.h"
 
 using namespace std;
+
+/* Error Check */
+#define CHKERRQ(n) if(n != MPI_SUCCESS) printf("Error!! Check line number : %d\n",__LINE__)
 
 class coordinate{
   friend class grid;
@@ -23,12 +25,21 @@ class Grid{
 private:
 
   int IMAX, JMAX;
+  int i_lb, i_ub, j_lb, j_ub;    // lower and upper bound in i,j dir
   double dx, dy;
   double beta;
-
+  int ierr;
   vector<vector<coordinate>> grid;
 
 public:
+
+  Grid(){
+    IMAX = 0; JMAX = 0;
+    i_lb = 0, i_ub = 0, j_lb = 0, j_ub = 0;
+    dx = 0;
+    dy = 0;
+    beta = 0;
+  }
 
   Grid(const int I, const int J, const PoissonEq& pe){
     IMAX = I;
@@ -48,6 +59,12 @@ public:
       }
   }
 
+
+  void SetGridSize(const int I, const int J){
+    IMAX = I;
+    JMAX = J;
+  }
+
   int sizex(){
     return IMAX;
   }
@@ -56,17 +73,6 @@ public:
     return JMAX;
   }
 
-  double DX(){
-    return dx;
-  }
-
-  double DY(){
-    return dy;
-  }
-
-  double Beta(){
-    return beta;
-  }
 
 
   ~Grid(){
