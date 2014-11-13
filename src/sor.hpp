@@ -1,12 +1,12 @@
-#ifndef SOR_H
-#define SOR_H
+#ifndef SOR_HPP
+#define SOR_HPP
 
 #include <iostream>
 #include <vector>
 #include <fstream>
-#include "poissoneq.h"
-#include "grid.h"
-#include "boundaryconditions.h"
+#include "poissoneq.hpp"
+#include "grid.hpp"
+#include "boundaryconditions.hpp"
 
 using namespace std;
 
@@ -271,4 +271,4 @@ public:
 
 };
 
-#endif // SOR_H
+#endif // SOR_HPP

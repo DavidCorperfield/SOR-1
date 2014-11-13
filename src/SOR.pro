@@ -11,7 +11,7 @@ QMAKE_CXX = mpicxx
 LIBS += -fopenmp -L/usr/local/openmpi/lib -lmpi_cxx -lstdc++ -ldl -lmpi -lblas
 
 HEADERS += \
-		poissoneq.h \
-		SOR.h \
-		grid.h \
-		boundaryconditions.h
+    boundaryconditions.hpp \
+    grid.hpp \
+    poissoneq.hpp \
+    sor.hpp

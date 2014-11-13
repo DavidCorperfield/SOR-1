@@ -1,12 +1,12 @@
-#ifndef GRID_H
-#define GRID_H
+#ifndef GRID_HPP
+#define GRID_HPP
 
 #include <iostream>
 #include <cmath>
 #include <fstream>
 #include <vector>
-#include "poissoneq.h"
-#include "boundaryconditions.h"
+#include "poissoneq.hpp"
+#include "boundaryconditions.hpp"
 
 using namespace std;
 
@@ -76,4 +76,4 @@ public:
 
 };
 
-#endif // GRID_H
+#endif // GRID_HPP

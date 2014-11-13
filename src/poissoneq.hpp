@@ -1,5 +1,5 @@
-#ifndef POISSONEQ_H
-#define POISSONEQ_H
+#ifndef POISSONEQ_HPP
+#define POISSONEQ_HPP
 
 #include <iostream>
 
@@ -30,4 +30,4 @@ public:
 
 };
 
-#endif // POISSONEQ_H
+#endif // POISSONEQ_HPP

@@ -1,10 +1,9 @@
 #include <iostream>
 #include <cmath>
 #include <omp.h>
-#include "SOR.h"
+#include "sor.hpp"
 using namespace std;
 
-//test
 
 double righthandside(double x,double y){
   //x = 0; y = 0

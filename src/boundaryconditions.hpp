@@ -1,5 +1,5 @@
-#ifndef BOUNDARYCONDITIONS_H
-#define BOUNDARYCONDITIONS_H
+#ifndef BOUNDARYCONDITIONS_HPP
+#define BOUNDARYCONDITIONS_HPP
 
 #include <iostream>
 #include <vector>
@@ -50,4 +50,4 @@ public:
 
 };
 
-#endif // BOUNDARYCONDITIONS_H
+#endif // BOUNDARYCONDITIONS_HPP
