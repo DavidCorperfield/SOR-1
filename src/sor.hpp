@@ -9,6 +9,8 @@
 #include "boundaryconditions.hpp"
 #include "mpi.h"
 
+//test
+
 using namespace std;
 
 class SOR{
