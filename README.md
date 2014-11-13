@@ -2,4 +2,4 @@ Parallel SOR using OpenMP and MPI
 ===
 
 
-Poisson Solver using parallel SOR Methodin Object Oriented C++
+Solve general Poisson equation using parallel SOR Method. Implemented using Object Oriented C++
