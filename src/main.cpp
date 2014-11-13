@@ -4,6 +4,7 @@
 #include "SOR.h"
 using namespace std;
 
+//test
 
 double righthandside(double x,double y){
   //x = 0; y = 0
