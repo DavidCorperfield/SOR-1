@@ -55,20 +55,16 @@ int main(int argc, char **argv)
 
   SOR solver(&pe,&bc,&grid);
   solver.setMaxIterations(1e6);
+  solver.set_solver(SOR_MPI);
   solver.setRelaxationParameter(1.9);
   //solver.set_exactsol_fun(exactsol);
   //solver.exact_solution();
 
-  double tstart = MPI_Wtime();
-  solver.solve_sor_mpi();
-  double tend = MPI_Wtime();
+  solver.Solve();
 
   solver.WriteSolution("sol.dat");
 
-  cout << "Time taken = " << tend - tstart << endl;
 
   ierr = MPI_Finalize();
-
-  cout << "Hello Pranav!" << endl;
   return 0;
 }

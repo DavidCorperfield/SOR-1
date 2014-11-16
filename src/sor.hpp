@@ -15,10 +15,13 @@ using namespace std;
 /* Error Check */
 #define CHKERRQ(n) if(n != MPI_SUCCESS) printf("Error!! Check line number : %d\n",__LINE__)
 
+typedef enum {JACOBI_OMP,SOR_OMP,SOR_MPI} SolverType;
+
 class SOR{
 
 private:
 
+  SolverType solver;
   double **solution, **solution_old;
   double *sol_data, *sol_old_data;
   Grid* grid;
@@ -34,10 +37,10 @@ private:
   int sizex, sizey;
   int xs,xm,ys,ym;
 
-
 public:
 
   SOR(PoissonEq* p, BoundaryConditions* b,Grid* g){
+    solver = SOR_MPI;
     tolerance = 1e-5;
     itmax = 1000;
     omega = 1.0;
@@ -45,10 +48,16 @@ public:
     pe = p;
     bc = b;
     grid = g;
+    rank = 0;
+    size = 1;
     get_rank_size();
     allocate_sol_memory();
     SetInitialGuess();
     setBC();
+  }
+
+  void set_solver(const SolverType& solvertype){
+    solver = solvertype;
   }
 
   void get_rank_size(){
@@ -316,6 +325,7 @@ public:
 
       double err_sum = 0;
 
+      /* message passing between processors */
       if(size > 1){
         /* send up unless I'm at the top */
         if(rank < size-1){
@@ -339,8 +349,7 @@ public:
         for(int j = ys; j < ym; j++){
 
           int _i,_j,j_;
-
-          /* index offset to map to global array */
+          /* index offset to map to global array indices */
           _i = i + grid->i_lb;
           if(size == 1){
             _j = j + grid->j_lb;
@@ -363,8 +372,8 @@ public:
           if(_i > 0 && _i < grid->sizex()-1 && _j > 0 && _j < grid->sizey()-1){
 
             solution[i][j] = (1-omega)*solution_old[i][j] + omega/(2*(1+beta))
-                *(solution_old[i+1][j] + solution[i-1][j]
-                + beta*(solution_old[i][j+1]+solution[i][j-1]) - coeff_rhs*rhs);
+                *(solution_old[i+1][j] + solution_old[i-1][j]
+                + beta*(solution_old[i][j+1]+solution_old[i][j-1]) - coeff_rhs*rhs);
 
             err_sum += pow((solution[i][j] - solution_old[i][j]),2);
             solution_old[i][j] = solution[i][j];
@@ -373,20 +382,41 @@ public:
         }
       }
 
-      if(it%50 == 0){
+      if(it%100 == 0){
         MPI_Allreduce(&err_sum,&norm,1,MPI_DOUBLE,MPI_SUM,MPI_COMM_WORLD);
         norm = sqrt(norm);
         if(rank == 0){
-          cout << it << " : Residual norm = " << norm << endl;
+          cout << setw(8) << it << " : Residual norm = " << norm << endl;
         }
-      }
-
-      if(norm < tolerance){
-        break;
+        if(norm < tolerance){
+          break;
+        }
       }
 
     } /* end jacobi iteration loop */
 
+
+  }
+
+
+  void Solve(){
+    double tstart = MPI_Wtime();
+    switch (solver) {
+    case JACOBI_OMP:
+      solve_jacobi_omp();
+      break;
+    case SOR_OMP:
+      solve_sor_omp();
+    case SOR_MPI:
+      solve_sor_mpi();
+    default:
+      break;
+    }
+    double tend = MPI_Wtime();
+
+    if(rank == 0){
+      cout << "Time taken = " << tend - tstart << endl;
+    }
 
   }
 
@@ -420,7 +450,6 @@ public:
       }
     }
   }
-
 
 
   void WriteSolution(string filename){
