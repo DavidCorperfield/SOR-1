@@ -24,9 +24,9 @@ private:
   SolverType solver;
   double **solution, **solution_old;
   double *sol_data, *sol_old_data;
-  Grid* grid;
-  BoundaryConditions* bc;
-  PoissonEq* pe;
+  const Grid* grid;
+  const BoundaryConditions* bc;
+  const PoissonEq* pe;
   double tolerance;
   long unsigned int itmax;
   double omega;
@@ -39,15 +39,14 @@ private:
 
 public:
 
-  SOR(PoissonEq* p, BoundaryConditions* b,Grid* g){
+  SOR(PoissonEq* p, BoundaryConditions* b,Grid* g)
+    :pe(p), bc(b),grid(g)
+  {
     solver = SOR_MPI;
     tolerance = 1e-5;
     itmax = 1000;
     omega = 1.0;
     InitGuess = 0;
-    pe = p;
-    bc = b;
-    grid = g;
     rank = 0;
     size = 1;
     get_rank_size();

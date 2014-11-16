@@ -94,19 +94,19 @@ public:
 
   }
 
-  int sizex(){
+  int sizex() const {
     return IMAX;
   }
 
-  int sizey(){
+  int sizey() const {
     return JMAX;
   }
 
-  int lsizex(){
+  int lsizex() const {
     return lIMAX;
   }
 
-  int lsizey(){
+  int lsizey() const {
     return lJMAX;
   }
 
