@@ -62,16 +62,16 @@ public:
     lJMAX = JMAX/size;
     /* if rows are not exactly divisible by no of proc, add to last proc */
     if(rank == size - 1){
-        lJMAX += JMAX%size;
-      }
+      lJMAX += JMAX%size;
+    }
 
     /* compute lower and upper bound */
     i_lb = 0; i_ub = IMAX;
     j_lb = rank*(JMAX/size);
     j_ub = (rank+1)*(JMAX/size);
     if(rank == size - 1){
-        j_ub += JMAX%size;
-      }
+      j_ub += JMAX%size;
+    }
 
   }
 
@@ -84,13 +84,13 @@ public:
 
     grid.resize(lIMAX,vector<coordinate>(lJMAX));
     for(int i = 0; i < lIMAX; i++){
-        for(int j = 0; j < lJMAX; j++){
-            coordinate coord;
-            coord.x = pe.Xmin + (i+i_lb)*dx;
-            coord.y = pe.Ymin + (j+j_lb)*dy;
-            grid[i][j] = coord;
-          }
+      for(int j = 0; j < lJMAX; j++){
+        coordinate coord;
+        coord.x = pe.Xmin + (i+i_lb)*dx;
+        coord.y = pe.Ymin + (j+j_lb)*dy;
+        grid[i][j] = coord;
       }
+    }
 
   }
 

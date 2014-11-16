@@ -44,7 +44,7 @@ int main(int argc, char **argv)
 
   PoissonEq pe(1,1,righthandside,0,1,0,1);
   Grid grid;
-  grid.SetGridSize(10,10);
+  grid.SetGridSize(100,100);
   grid.SetEquation(pe);
   BoundaryConditions bc;
   // set boundary conditions
@@ -56,16 +56,16 @@ int main(int argc, char **argv)
   SOR solver(&pe,&bc,&grid);
   solver.setMaxIterations(1e6);
   solver.setRelaxationParameter(1.9);
-  solver.set_exactsol_fun(exactsol);
-  solver.exact_solution();
+  //solver.set_exactsol_fun(exactsol);
+  //solver.exact_solution();
 
-//  double tstart = omp_get_wtime();
-//  solver.solve_sor_omp();
-//  double tend = omp_get_wtime();
+  double tstart = MPI_Wtime();
+  solver.solve_sor_mpi();
+  double tend = MPI_Wtime();
 
   solver.WriteSolution("sol.dat");
 
-//  cout << "Time taken = " << tend - tstart << endl;
+  cout << "Time taken = " << tend - tstart << endl;
 
   ierr = MPI_Finalize();
 
